@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeseLab — Deutsch Reading Trainer</title>
+
+<style>
+:root{
+    --bg:#080d18;
+    --panel:#111a2b;
+    --panel2:#17233a;
+    --border:#293852;
+    --text:#edf4ff;
+    --muted:#94a3bd;
+    --green:#62e6bd;
+    --blue:#6f9cff;
+    --red:#ff7188;
+    --yellow:#ffd166;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 80% 0%,#17365b 0%,transparent 35%),
+        radial-gradient(circle at 0% 100%,#123a38 0%,transparent 30%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,Arial,sans-serif;
+}
+
+.app{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    min-height:100vh;
+}
+
+.sidebar{
+    border-right:1px solid var(--border);
+    background:rgba(8,13,24,.88);
+    padding:25px 17px;
+    position:sticky;
+    top:0;
+    height:100vh;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:900;
+    margin-left:8px;
+}
+
+.logo span{
+    color:var(--green);
+}
+
+.subtitle{
+    color:var(--muted);
+    font-size:12px;
+    margin:5px 8px 30px;
+}
+
+.nav button{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    padding:13px;
+    margin:3px 0;
+    border-radius:11px;
+    text-align:left;
+    cursor:pointer;
+}
+
+.nav button:hover,
+.nav button.active{
+    background:var(--panel2);
+    color:white;
+}
+
+.daily{
+    position:absolute;
+    bottom:20px;
+    left:17px;
+    right:17px;
+    background:linear-gradient(145deg,#16263e,#101829);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:15px;
+}
+
+.daily small{
+    color:var(--green);
+    font-weight:800;
+}
+
+.daily h3{
+    margin:6px 0;
+}
+
+.daily p{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.4;
+    margin:0;
+}
+
+main{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:32px;
+}
+
+.eyebrow{
+    color:var(--green);
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+h1{
+    font-size:42px;
+    line-height:1.05;
+    margin:7px 0;
+}
+
+.description{
+    color:var(--muted);
+    margin-bottom:25px;
+}
+
+.card{
+    background:rgba(17,26,43,.92);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr auto;
+    gap:10px;
+    padding:15px;
+    margin-bottom:15px;
+}
+
+select,
+button{
+    font:inherit;
+}
+
+select,
+.btn{
+    background:#0e1729;
+    color:white;
+    border:1px solid var(--border);
+    padding:11px 14px;
+    border-radius:10px;
+}
+
+.btn{
+    cursor:pointer;
+}
+
+.btn:hover{
+    filter:brightness(1.15);
+}
+
+.primary{
+    background:var(--green);
+    color:#071218;
+    border:0;
+    font-weight:800;
+}
+
+.blue{
+    background:#213c73;
+}
+
+.reader{
+    padding:27px;
+}
+
+.reader-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.badge{
+    background:#20304d;
+    color:#c8d7f7;
+    border-radius:20px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-right:5px;
+}
+
+.progress{
+    height:7px;
+    background:#09101d;
+    border-radius:20px;
+    margin:20px 0 25px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--green),var(--blue));
+    transition:.25s;
+}
+
+.text{
+    font-size:24px;
+    line-height:1.9;
+}
+
+.word{
+    padding:2px 4px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.word:hover{
+    background:#263a5c;
+}
+
+.word.correct{
+    color:#a8f5d9;
+}
+
+.word.wrong{
+    color:#ff91a2;
+    text-decoration:underline wavy var(--red);
+}
+
+.word.current{
+    background:#304b78;
+}
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:25px;
+}
+
+.status{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:12px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1.2fr .8fr;
+    gap:15px;
+    margin-top:15px;
+}
+
+.panel{
+    padding:20px;
+}
+
+.panel h3{
+    margin-top:0;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.stat{
+    background:#0d1627;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:15px;
+}
+
+.stat strong{
+    display:block;
+    font-size:26px;
+}
+
+.stat span{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.mistake{
+    display:grid;
+    grid-template-columns:1fr 1fr 1.5fr;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid #22304a;
+}
+
+.red{
+    color:var(--red);
+    font-weight:bold;
+}
+
+.ipa{
+    font-family:Georgia,serif;
+    color:#a8bce7;
+}
+
+.translation{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.advice li{
+    margin:10px 0;
+    color:#cbd5e9;
+}
+
+.hidden{
+    display:none;
+}
+
+footer{
+    text-align:center;
+    color:#61708c;
+    font-size:12px;
+    margin-top:30px;
+}
+
+@media(max-width:850px){
+
+    .app{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        height:auto;
+        position:relative;
+        border-right:0;
+        border-bottom:1px solid var(--border);
+    }
+
+    .daily{
+        display:none;
+    }
+
+    .nav{
+        display:flex;
+    }
+
+    .nav button{
+        width:auto;
+    }
+
+    main{
+        padding:20px 14px;
+    }
+
+    .controls{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .text{
+        font-size:20px;
+    }
+
+    h1{
+        font-size:32px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Lese<span>Lab</span>
+    </div>
+
+    <div class="subtitle">
+        Deutsch lesen · hören · verbessern
+    </div>
+
+    <div class="nav">
+
+        <button class="active" onclick="showPage('trainer',this)">
+            ◉ Trainer
+        </button>
+
+        <button onclick="showPage('progress',this)">
+            ▣ Fortschritt
+        </button>
+
+        <button onclick="showPage('about',this)">
+            ? Über LeseLab
+        </button>
+
+    </div>
+
+    <div class="daily">
+
+        <small>WORT DES TAGES</small>
+
+        <h3 id="dailyWord">—</h3>
+
+        <p id="dailyTranslation">—</p>
+
+    </div>
+
+</aside>
+
+
+<main>
+
+
+<!-- TRAINER -->
+
+<section id="trainer">
+
+    <div class="eyebrow">
+        Voice Reading Lab
+    </div>
+
+    <h1>
+        Lies. Sprich.<br>
+        Verbessere dich.
+    </h1>
+
+    <p class="description">
+        Lies einen deutschen Text laut vor und LeseLab analysiert,
+        welche Wörter erkannt wurden.
+    </p>
+
+
+    <div class="card controls">
+
+        <select id="level" onchange="loadText()">
+
+            <option value="A1">
+                A1 · Anfänger
+            </option>
+
+            <option value="A2">
+                A2 · Grundstufe
+            </option>
+
+            <option value="B1" selected>
+                B1 · Mittelstufe
+            </option>
+
+            <option value="B2">
+                B2 · Fortgeschritten
+            </option>
+
+        </select>
+
+
+        <select id="topic" onchange="loadText()">
+
+            <option value="all">
+                Alle Themen
+            </option>
+
+            <option value="school">
+                Schule & Lernen
+            </option>
+
+            <option value="city">
+                Alltag & Stadt
+            </option>
+
+            <option value="future">
+                Zukunft & Arbeit
+            </option>
+
+        </select>
+
+
+        <select id="speed">
+
+            <option value="slow">
+                Langsam
+            </option>
+
+            <option value="normal" selected>
+                Normal
+            </option>
+
+            <option value="fast">
+                Schnell
+            </option>
+
+        </select>
+
+
+        <button class="btn blue" onclick="newText()">
+            ↻ Neuer Text
+        </button>
+
+    </div>
+
+
+    <div class="card reader">
+
+        <div class="reader-top">
+
+            <div>
+
+                <span class="badge" id="levelBadge">
+                    B1
+                </span>
+
+                <span class="badge" id="topicBadge">
+                    Schule & Lernen
+                </span>
+
+            </div>
+
+            <span class="badge" id="timer">
+                00:00
+            </span>
+
+        </div>
+
+
+        <div class="progress">
+
+            <div class="progress-bar" id="progressBar"></div>
+
+        </div>
+
+
+        <div class="text" id="text"></div>
+
+
+        <div class="actions">
+
+            <button
+                class="btn primary"
+                id="startBtn"
+                onclick="startReading()">
+
+                🎙 Aufnahme starten
+
+            </button>
+
+
+            <button
+                class="btn"
+                onclick="stopReading()">
+
+                ■ Stoppen
+
+            </button>
+
+
+            <button
+                class="btn"
+                onclick="speakText()">
+
+                🔊 Vorlesen
+
+            </button>
+
+
+            <button
+                class="btn"
+                onclick="resetReading()">
+
+                ↺ Zurücksetzen
+
+            </button>
+
+        </div>
+
+
+        <div class="status" id="status">
+
+            Bereit. Klicke auf „Aufnahme starten“.
+
+        </div>
+
+    </div>
+
+
+    <div class="grid">
+
+
+        <div class="card panel">
+
+            <h3>
+                📊 Analyse
+            </h3>
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <strong id="accuracy">
+                        —
+                    </strong>
+
+                    <span>
+                        Wortgenauigkeit
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong id="correct">
+                        —
+                    </strong>
+
+                    <span>
+                        Richtig erkannt
+                    </span>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <strong id="mistakes">
+                        —
+                    </strong>
+
+                    <span>
+                        Verbesserungen
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div id="mistakeList">
+
+            </div>
+
+        </div>
+
+
+        <div class="card panel advice">
+
+            <h3>
+                🧠 Coach-Tipps
+            </h3>
+
+            <ul id="advice">
+
+                <li>
+                    Lies den Text in deinem normalen Tempo.
+                </li>
+
+                <li>
+                    Sprich deutlich, aber nicht künstlich langsam.
+                </li>
+
+                <li>
+                    Klicke auf Wörter, um Ausspracheinformationen
+                    zu sehen.
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- PROGRESS -->
+
+<section id="progress" class="hidden">
+
+    <div class="eyebrow">
+        Dashboard
+    </div>
+
+    <h1>
+        Dein Fortschritt
+    </h1>
+
+    <p class="description">
+        Deine Ergebnisse werden nur in diesem Browser gespeichert.
+    </p>
+
+
+    <div class="card panel">
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <strong id="sessions">
+                    0
+                </strong>
+
+                <span>
+                    Übungen
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong id="best">
+                    —
+                </strong>
+
+                <span>
+                    Beste Genauigkeit
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                <strong id="average">
+                    —
+                </strong>
+
+                <span>
+                    Durchschnitt
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div id="historyList"></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ABOUT -->
+
+<section id="about" class="hidden">
+
+    <div class="eyebrow">
+        About
+    </div>
+
+    <h1>
+        Wie funktioniert LeseLab?
+    </h1>
+
+
+    <div class="card panel">
+
+        <h3>
+            01 · Text auswählen
+        </h3>
+
+        <p>
+            Wähle einen Schwierigkeitsgrad zwischen A1 und B2
+            und optional ein Thema.
+        </p>
+
+
+        <h3>
+            02 · Laut lesen
+        </h3>
+
+        <p>
+            Dein Browser verwendet die integrierte
+            Spracherkennung, um deine Stimme in Text umzuwandeln.
+        </p>
+
+
+        <h3>
+            03 · Automatische Analyse
+        </h3>
+
+        <p>
+            Die erkannten Wörter werden mit dem Zieltext
+            verglichen. Mögliche Fehler werden rot markiert.
+        </p>
+
+
+        <h3>
+            04 · Wörter untersuchen
+        </h3>
+
+        <p>
+            Klicke auf ein Wort. LeseLab zeigt, wenn vorhanden,
+            die IPA-Transkription und die englische Übersetzung.
+        </p>
+
+
+        <p style="color:#ffd166">
+
+            ⚠ Wichtig:
+            Die Browser-Spracherkennung kann nicht perfekt beurteilen,
+            ob ein einzelner Laut phonetisch korrekt ausgesprochen wurde.
+            Sie bewertet hauptsächlich, welches Wort erkannt wurde.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+<footer>
+    LeseLab · Deutsch Reading Trainer
+</footer>
+
+</main>
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   TEXTE
+========================= */
+
+const texts = [
+
+{
+    level:"A1",
+    topic:"school",
+    title:"Ein neuer Schultag",
+
+    text:
+    "Heute beginnt ein neuer Schultag. Ich stehe früh auf und fahre mit dem Bus zur Schule. Im Unterricht lerne ich Deutsch und Mathematik. In der Pause spreche ich mit meinen Freunden. Am Nachmittag mache ich meine Hausaufgaben.",
+
+    words:{
+        "Schultag":["[ˈʃuːltaːk]","school day"],
+        "Unterricht":["[ˈʊntɐʁɪçt]","lesson"],
+        "Pause":["[ˈpaʊ̯zə]","break"],
+        "Hausaufgaben":["[ˈhaʊ̯sʔaʊ̯fɡaːbən]","homework"]
+    }
+},
+
+
+{
+    level:"A2",
+    topic:"city",
+    title:"Ein Tag in der Stadt",
+
+    text:
+    "Am Samstag fahre ich in die Stadt, weil ich einige Dinge kaufen möchte. Zuerst gehe ich in einen großen Supermarkt. Danach treffe ich einen Freund in einem kleinen Café. Wir sprechen über die Schule und planen unseren nächsten Ausflug.",
+
+    words:{
+        "Supermarkt":["[ˈzuːpɐˌmaʁkt]","supermarket"],
+        "Ausflug":["[ˈaʊ̯sfluːk]","trip"],
+        "planen":["[ˈplaːnən]","to plan"]
+    }
+},
+
+
+{
+    level:"B1",
+    topic:"school",
+    title:"Warum Lesen beim Lernen hilft",
+
+    text:
+    "Regelmäßiges Lesen kann dabei helfen, neue Wörter schneller zu erkennen und komplexe Sätze besser zu verstehen. Besonders nützlich ist es, wenn man nicht jedes unbekannte Wort sofort übersetzt. Stattdessen kann man zuerst versuchen, die Bedeutung aus dem Zusammenhang zu erschließen.",
+
+    words:{
+        "Regelmäßiges":["[ˈʁeːɡəlmɛːsɪɡəs]","regular"],
+        "komplexe":["[kɔmˈplɛksə]","complex"],
+        "unbekannte":["[ʊnbəˈkantə]","unknown"],
+        "Zusammenhang":["[ˈtsuːzamənhaŋ]","context / connection"],
+        "erschließen":["[ɛɐ̯ˈʃliːsən]","to infer / figure out"]
+    }
+},
+
+
+{
+    level:"B2",
+    topic:"future",
+    title:"Lernen in einer Welt mit KI",
+
+    text:
+    "Künstliche Intelligenz verändert die Art und Weise, wie Menschen lernen und arbeiten. Dadurch verschwinden bestimmte Aufgaben nicht unbedingt, sondern werden teilweise automatisiert. Gleichzeitig gewinnen Fähigkeiten wie kritisches Denken, Kommunikation und die Fähigkeit, Informationen zuverlässig zu bewerten, an Bedeutung.",
+
+    words:{
+        "künstliche":["[ˈkʏnstlɪçə]","artificial"],
+        "automatisiert":["[aʊ̯tomaˈtiːɐ̯t]","automated"],
+        "kritisches":["[ˈkʁiːtɪʃəs]","critical"],
+        "zuverlässig":["[ˈtsuːfɛɐ̯lɛsɪç]","reliably"],
+        "bewerten":["[bəˈvɛʁtən]","to evaluate"],
+        "Bedeutung":["[bəˈdɔɪ̯tʊŋ]","importance / meaning"]
+    }
+},
+
+
+{
+    level:"B2",
+    topic:"city",
+    title:"Eine Stadt verändert sich",
+
+    text:
+    "Moderne Städte stehen vor der Herausforderung, genügend Wohnraum zu schaffen und gleichzeitig die Lebensqualität zu erhalten. Öffentliche Verkehrsmittel, Grünflächen und gut geplante Fahrradwege können dazu beitragen, dass Menschen ihre Wege sicher und umweltfreundlicher zurücklegen.",
+
+    words:{
+        "Herausforderung":["[hɛˈʁaʊ̯sfoʁdɐʁʊŋ]","challenge"],
+        "Wohnraum":["[ˈvoːnʁaʊ̯m]","housing"],
+        "Lebensqualität":["[ˈleːbənskvaliˌtɛːt]","quality of life"],
+        "umweltfreundlicher":["[ˈʊmvɛltˌfʁɔɪ̯ntlɪçɐ]","more environmentally friendly"]
+    }
+}
+
+];
+
+
+
+/* =========================
+   RANDOM WORD
+========================= */
+
+const dailyWords = [
+
+["nachvollziehbar","comprehensible"],
+["vielversprechend","promising"],
+["ausschlaggebend","decisive / crucial"],
+["beeinträchtigen","to impair"],
+["veranschaulichen","to illustrate"],
+["zuverlässig","reliable"],
+["voraussetzen","to require"],
+["nachhaltig","sustainable / lasting"],
+["bewältigen","to manage / cope with"],
+["differenziert","nuanced / differentiated"],
+["wahrnehmen","to perceive"],
+["berücksichtigen","to take into account"],
+["hervorheben","to emphasize"],
+["erheblich","considerable / significant"],
+["vermeiden","to avoid"]
+];
+
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let currentText = null;
+
+let recognition = null;
+
+let recording = false;
+
+let transcript = "";
+
+let timerSeconds = 0;
+
+let timerInterval = null;
+
+
+
+/* =========================
+   INIT
+========================= */
+
+function init(){
+
+    const word =
+        dailyWords[
+            new Date().getDate() % dailyWords.length
+        ];
+
+    document.getElementById("dailyWord").textContent =
+        word[0];
+
+    document.getElementById("dailyTranslation").textContent =
+        word[1];
+
+    loadText();
+
+    updateHistory();
+}
+
+
+
+/* =========================
+   LOAD TEXT
+========================= */
+
+function loadText(){
+
+    const level =
+        document.getElementById("level").value;
+
+    const topic =
+        document.getElementById("topic").value;
+
+
+    let pool =
+        texts.filter(
+            t =>
+            t.level === level &&
+            (topic === "all" || t.topic === topic)
+        );
+
+
+    if(pool.length === 0){
+
+        pool =
+            texts.filter(
+                t => t.level === level
+            );
+
+    }
+
+
+    currentText =
+        pool[Math.floor(Math.random()*pool.length)];
+
+
+    document.getElementById("levelBadge").textContent =
+        currentText.level;
+
+    document.getElementById("topicBadge").textContent =
+        topicName(currentText.topic);
+
+
+    renderText();
+
+    resetStats();
+}
+
+
+
+function topicName(topic){
+
+    const names = {
+
+        school:"Schule & Lernen",
+
+        city:"Alltag & Stadt",
+
+        future:"Zukunft & Arbeit"
+
+    };
+
+    return names[topic] || topic;
+}
+
+
+
+function newText(){
+
+    loadText();
+
+}
+
+
+
+/* =========================
+   RENDER TEXT
+========================= */
+
+function renderText(){
+
+    const container =
+        document.getElementById("text");
+
+
+    const words =
+        currentText.text.split(/(\s+)/);
+
+
+    container.innerHTML =
+        words.map(part => {
+
+            if(/\s+/.test(part)){
+                return part;
+            }
+
+
+            const clean =
+                part.replace(
+                    /[.,!?;:()„“"’']/g,
+                    ""
+                );
+
+
+            return `
+                <span
+                    class="word"
+                    data-word="${clean}"
+                    onclick="showWord(this)"
+                >
+                    ${part}
+                </span>
+            `;
+
+        }).join("");
+}
+
+
+
+/* =========================
+   WORD INFORMATION
+========================= */
+
+function showWord(element){
+
+    const word =
+        element.dataset.word;
+
+
+    let info =
+        currentText.words[word];
+
+
+    if(!info){
+
+        info =
+            genericWord(word);
+
+    }
+
+
+    alert(
+        word +
+        "\n\n" +
+        "Aussprache: " +
+        info[0] +
+        "\n\n" +
+        "English: " +
+        info[1]
+    );
+}
+
+
+
+function genericWord(word){
+
+    const dictionary = {
+
+        heute:["[ˈhɔɪ̯tə]","today"],
+
+        lernen:["[ˈlɛʁnən]","to learn"],
+
+        Schule:["[ˈʃuːlə]","school"],
+
+        Menschen:["[ˈmɛnʃən]","people"],
+
+        Informationen:["[ɪnfɔʁmaˈtsi̯oːnən]","information"],
+
+        Arbeit:["[ˈaʁbaɪ̯t]","work"],
+
+        Sprache:["[ˈʃpʁaːxə]","language"]
+
+    };
+
+
+    return (
+        dictionary[word] ||
+        ["—","Translation not available"]
+    );
+}
+
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetStats(){
+
+    document.getElementById("accuracy").textContent =
+        "—";
+
+    document.getElementById("correct").textContent =
+        "—";
+
+    document.getElementById("mistakes").textContent =
+        "—";
+
+    document.getElementById("mistakeList").innerHTML =
+        "";
+
+    document.getElementById("progressBar").style.width =
+        "0%";
+
+    document.getElementById("status").textContent =
+        "Bereit. Klicke auf „Aufnahme starten“.";
+
+    document.querySelectorAll(".word")
+        .forEach(
+            word =>
+            word.classList.remove(
+                "correct",
+                "wrong"
+            )
+        );
+
+}
+
+
+
+/* =========================
+   START RECORDING
+========================= */
+
+function startReading(){
+
+    if(
+        !(
+            "webkitSpeechRecognition" in window ||
+            "SpeechRecognition" in window
+        )
+    ){
+
+        document.getElementById("status").textContent =
+            "Dein Browser unterstützt keine Web Speech API. Nutze Chrome oder Edge.";
+
+        return;
+    }
+
+
+    if(recording){
+        return;
+    }
+
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.lang =
+        "de-DE";
+
+
+    recognition.continuous =
+        true;
+
+
+    recognition.interimResults =
+        true;
+
+
+    transcript = "";
+
+    recording = true;
+
+    timerSeconds = 0;
+
+
+    document.getElementById("startBtn").textContent =
+        "🔴 Aufnahme läuft…";
+
+
+    document.getElementById("status").textContent =
+        "Ich höre zu. Lies jetzt den gesamten Text.";
+
+
+    timerInterval =
+        setInterval(
+            () => {
+
+                timerSeconds++;
+
+                document.getElementById("timer")
+                    .textContent =
+                    formatTime(timerSeconds);
+
+            },
+            1000
+        );
+
+
+    let lastSpeech =
+        Date.now();
+
+
+    recognition.onresult =
+        event => {
+
+            let interim = "";
+
+
+            for(
+                let i=event.resultIndex;
+                i<event.results.length;
+                i++
+            ){
+
+                const result =
+                    event.results[i];
+
+
+                if(result.isFinal){
+
+                    transcript +=
+                        " " +
+                        result[0].transcript;
+
+                }else{
+
+                    interim +=
+                        " " +
+                        result[0].transcript;
+
+                }
+
+            }
+
+
+            lastSpeech =
+                Date.now();
+
+
+            const live =
+                transcript +
+                " " +
+                interim;
+
+
+            document.getElementById("status")
+                .textContent =
+                "Erkannt: " +
+                live.trim().slice(-120);
+
+
+            updateLive(live);
+
+        };
+
+
+    recognition.onerror =
+        event => {
+
+            document.getElementById("status")
+                .textContent =
+                "Erkennungsfehler: " +
+                event.error;
+
+        };
+
+
+    recognition.onend =
+        () => {
+
+            if(recording){
+
+                try{
+                    recognition.start();
+                }catch(e){}
+
+            }
+
+        };
+
+
+    recognition.start();
+
+
+    /*
+       Automatisch stoppen,
+       wenn ca. 2 Sekunden nichts
+       mehr gesprochen wurde.
+    */
+
+    const autoStop =
+        setInterval(
+            () => {
+
+                if(
+                    recording &&
+                    Date.now() - lastSpeech > 2200 &&
+                    transcript.trim().length > 10
+                ){
+
+                    clearInterval(autoStop);
+
+                    stopReading();
+
+                }
+
+            },
+            300
+        );
+
+}
+
+
+
+/* =========================
+   STOP
+========================= */
+
+function stopReading(){
+
+    if(!recording){
+        return;
+    }
+
+
+    recording = false;
+
+
+    if(recognition){
+
+        try{
+
+            recognition.onend = null;
+
+            recognition.stop();
+
+        }catch(e){}
+
+    }
+
+
+    clearInterval(timerInterval);
+
+
+    document.getElementById("startBtn")
+        .textContent =
+        "🎙 Aufnahme starten";
+
+
+    document.getElementById("status")
+        .textContent =
+        "Analyse läuft…";
+
+
+    analyze(transcript);
+
+}
+
+
+
+/* =========================
+   NORMALIZE
+========================= */
+
+function normalize(text){
+
+    return text
+
+        .toLowerCase()
+
+        .normalize("NFD")
+
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+
+        .replace(
+            /ß/g,
+            "ss"
+        )
+
+        .replace(
+            /[^\p{L}\p{N}\s'-]/gu,
+            ""
+        )
+
+        .split(/\s+/)
+
+        .filter(Boolean);
+}
+
+
+
+/* =========================
+   LEVENSHTEIN
+========================= */
+
+function levenshtein(a,b){
+
+    const matrix =
+        Array.from(
+            {length:b.length+1},
+            (_,i)=>i
+        );
+
+
+    for(
+        let i=1;
+        i<=a.length;
+        i++
+    ){
+
+        let previous =
+            matrix[0];
+
+
+        matrix[0] = i;
+
+
+        for(
+            let j=1;
+            j<=b.length;
+            j++
+        ){
+
+            const temp =
+                matrix[j];
+
+
+            matrix[j] =
+                Math.min(
+
+                    matrix[j] + 1,
+
+                    matrix[j-1] + 1,
+
+                    previous +
+                    (
+                        a[i-1] === b[j-1]
+                        ? 0
+                        : 1
+                    )
+
+                );
+
+
+            previous = temp;
+
+        }
+
+    }
+
+
+    return matrix[b.length];
+
+}
+
+
+
+function similar(a,b){
+
+    if(a === b){
+        return true;
+    }
+
+
+    const distance =
+        levenshtein(a,b);
+
+
+    return (
+        distance <=
+        Math.max(
+            1,
+            Math.floor(
+                Math.max(a.length,b.length)*0.22
+            )
+        )
+    );
+
+}
+
+
+
+/* =========================
+   ANALYSIS
+========================= */
+
+function analyze(spoken){
+
+    const target =
+        normalize(currentText.text);
+
+
+    const received =
+        normalize(spoken);
+
+
+    if(received.length === 0){
+
+        document.getElementById("status")
+            .textContent =
+            "Ich konnte keine Sprache erkennen. Versuche es erneut.";
+
+        return;
+
+    }
+
+
+    let correct = 0;
+
+    let pointer = 0;
+
+    const mistakes = [];
+
+
+    const wordElements =
+        document.querySelectorAll(".word");
+
+
+    wordElements.forEach(
+        word =>
+        word.classList.remove(
+            "correct",
+            "wrong"
+        )
+    );
+
+
+    for(
+        let i=0;
+        i<target.length;
+        i++
+    ){
+
+        const targetWord =
+            target[i];
+
+
+        let found =
+            -1;
+
+
+        for(
+            let j=pointer;
+            j<Math.min(pointer+3,received.length);
+            j++
+        ){
+
+            if(
+                similar(
+                    targetWord,
+                    received[j]
+                )
+            ){
+
+                found = j;
+
+                break;
+
+            }
+
+        }
+
+
+        const element =
+            wordElements[i];
+
+
+        if(found >= 0){
+
+            correct++;
+
+            pointer =
+                found+1;
+
+            element.classList.add(
+                "correct"
+            );
+
+        }else{
+
+            mistakes.push(
+                targetWord
+            );
+
+            element.classList.add(
+                "wrong"
+            );
+
+        }
+
+    }
+
+
+    const accuracy =
+        Math.round(
+            correct /
+            target.length *
+            100
+        );
+
+
+    document.getElementById("accuracy")
+        .textContent =
+        accuracy + "%";
+
+
+    document.getElementById("correct")
+        .textContent =
+        correct +
+        "/" +
+        target.length;
+
+
+    document.getElementById("mistakes")
+        .textContent =
+        mistakes.length;
+
+
+    document.getElementById("progressBar")
+        .style.width =
+        accuracy + "%";
+
+
+    renderMistakes(mistakes);
+
+
+    createAdvice(
+        accuracy,
+        mistakes
+    );
+
+
+    saveResult(accuracy);
+
+
+    document.getElementById("status")
+        .textContent =
+        "Analyse abgeschlossen.";
+}
+
+
+
+/* =========================
+   MISTAKES
+========================= */
+
+function renderMistakes(mistakes){
+
+    const container =
+        document.getElementById(
+            "mistakeList"
+        );
+
+
+    if(mistakes.length === 0){
+
+        container.innerHTML =
+            `
+            <p style="color:var(--green)">
+                ✓ Keine deutlichen Wortfehler erkannt.
+            </p>
+            `;
+
+        return;
+    }
+
+
+    let html =
+        `
+        <h4 style="margin-top:20px">
+            Mögliche Fehler
+        </h4>
+        `;
+
+
+    mistakes
+        .slice(0,15)
+        .forEach(
+            word => {
+
+                const info =
+                    currentText.words[word] ||
+                    genericWord(word);
+
+
+                html +=
+                    `
+                    <div class="mistake">
+
+                        <span class="red">
+                            ${word}
+                        </span>
+
+                        <span class="ipa">
+                            ${info[0]}
+                        </span>
+
+                        <span class="translation">
+                            ${info[1]}
+                        </span>
+
+                    </div>
+                    `;
+
+            }
+        );
+
+
+    if(mistakes.length > 15){
+
+        html +=
+            `
+            <p class="translation">
+                + ${mistakes.length-15}
+                weitere Wörter
+            </p>
+            `;
+
+    }
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+
+/* =========================
+   ADVICE
+========================= */
+
+function createAdvice(
+    accuracy,
+    mistakes
+){
+
+    const advice =
+        document.getElementById(
+            "advice"
+        );
+
+
+    const list = [];
+
+
+    if(accuracy >= 90){
+
+        list.push(
+            "Sehr starke Leistung! Versuche beim nächsten Text etwas schneller zu lesen."
+        );
+
+    }else if(accuracy >= 75){
+
+        list.push(
+            "Gute Basis. Lies die rot markierten Wörter noch einmal langsam."
+        );
+
+    }else{
+
+        list.push(
+            "Lies den Text zuerst langsamer und konzentriere dich auf klare Wortenden."
+        );
+
+    }
+
+
+    if(
+        mistakes.some(
+            word =>
+            word.length >= 10
+        )
+    ){
+
+        list.push(
+            "Bei langen Wörtern hilft es, sie zuerst in Silben zu zerlegen."
+        );
+
+    }
+
+
+    list.push(
+        "Klicke auf schwierige Wörter und überprüfe die IPA-Aussprache."
+    );
+
+
+    list.push(
+        "Wiederhole denselben Text nach einigen Minuten. Ziel: höhere Genauigkeit bei natürlichem Tempo."
+    );
+
+
+    advice.innerHTML =
+        list
+        .map(
+            item =>
+            `<li>${item}</li>`
+        )
+        .join("");
+
+}
+
+
+
+/* =========================
+   LIVE PROGRESS
+========================= */
+
+function updateLive(text){
+
+    const target =
+        normalize(currentText.text);
+
+    const spoken =
+        normalize(text);
+
+
+    const progress =
+        Math.min(
+            100,
+            spoken.length /
+            target.length *
+            100
+        );
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        progress + "%";
+
+}
+
+
+
+/* =========================
+   TEXT TO SPEECH
+========================= */
+
+function speakText(){
+
+    if(
+        !("speechSynthesis" in window)
+    ){
+
+        alert(
+            "Dein Browser unterstützt keine Sprachwiedergabe."
+        );
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            currentText.text
+        );
+
+
+    utterance.lang =
+        "de-DE";
+
+
+    const speed =
+        document.getElementById(
+            "speed"
+        ).value;
+
+
+    if(speed === "slow"){
+
+        utterance.rate = .75;
+
+    }else if(speed === "fast"){
+
+        utterance.rate = 1.15;
+
+    }else{
+
+        utterance.rate = .95;
+
+    }
+
+
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetReading(){
+
+    if(recording){
+        stopReading();
+    }
+
+
+    transcript = "";
+
+    timerSeconds = 0;
+
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    document.getElementById(
+        "timer"
+    ).textContent =
+        "00:00";
+
+
+    renderText();
+
+    resetStats();
+
+}
+
+
+
+/* =========================
+   TIME
+========================= */
+
+function formatTime(seconds){
+
+    const minutes =
+        Math.floor(
+            seconds/60
+        );
+
+
+    const sec =
+        seconds % 60;
+
+
+    return (
+        String(minutes).padStart(2,"0") +
+        ":" +
+        String(sec).padStart(2,"0")
+    );
+
+}
+
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function saveResult(accuracy){
+
+    let history =
+        JSON.parse(
+            localStorage.getItem(
+                "leselab-history"
+            ) || "[]"
+        );
+
+
+    history.unshift({
+
+        date:
+            new Date()
+            .toLocaleString(
+                "de-CH"
+            ),
+
+        level:
+            currentText.level,
+
+        accuracy
+
+    });
+
+
+    history =
+        history.slice(
+            0,
+            30
+        );
+
+
+    localStorage.setItem(
+        "leselab-history",
+        JSON.stringify(history)
+    );
+
+
+    updateHistory();
+
+}
+
+
+
+function updateHistory(){
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "leselab-history"
+            ) || "[]"
+        );
+
+
+    document.getElementById(
+        "sessions"
+    ).textContent =
+        history.length;
+
+
+    if(history.length){
+
+        const best =
+            Math.max(
+                ...history.map(
+                    x=>x.accuracy
+                )
+            );
+
+
+        const average =
+            Math.round(
+                history.reduce(
+                    (sum,x)=>
+                    sum+x.accuracy,
+                    0
+                ) /
+                history.length
+            );
+
+
+        document.getElementById(
+            "best"
+        ).textContent =
+            best + "%";
+
+
+        document.getElementById(
+            "average"
+        ).textContent =
+            average + "%";
+
+    }
+
+
+    const list =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    if(!history.length){
+
+        list.innerHTML =
+            `
+            <p class="translation">
+                Noch keine Übungen.
+            </p>
+            `;
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+        history
+        .map(
+            item =>
+            `
+            <div class="mistake">
+
+                <span>
+                    ${item.date}
+                </span>
+
+                <span>
+                    ${item.level}
+                </span>
+
+                <strong>
+                    ${item.accuracy}%
+                </strong>
+
+            </div>
+            `
+        )
+        .join("");
+
+}
+
+
+
+/* =========================
+   PAGE NAVIGATION
+========================= */
+
+function showPage(
+    page,
+    button
+){
+
+    document
+        .querySelectorAll(
+            "main > section"
+        )
+        .forEach(
+            section =>
+            section.classList.add(
+                "hidden"
+            )
+        );
+
+
+    document
+        .getElementById(page)
+        .classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .querySelectorAll(
+            ".nav button"
+        )
+        .forEach(
+            btn =>
+            btn.classList.remove(
+                "active"
+            )
+        );
+
+
+    button.classList.add(
+        "active"
+    );
+
+
+    if(page === "progress"){
+
+        updateHistory();
+
+    }
+
+}
+
+
+
+/* =========================
+   START
+========================= */
+
+init();
+
+</script>
+
+</body>
+</html>
